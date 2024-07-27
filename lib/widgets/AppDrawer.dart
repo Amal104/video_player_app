@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:video_player_app/screens/Login_screen.dart';
 import 'package:video_player_app/screens/MyHome_Page.dart';
 import 'package:video_player_app/screens/Profile_Screen.dart';
 
@@ -77,6 +79,10 @@ class AppDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: ListTile(
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                Get.off(() => const LoginScreen());
+              },
               leading: Icon(Icons.logout),
               title: Text(
                 "L O G O U T",

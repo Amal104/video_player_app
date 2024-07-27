@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
 import 'package:get/get.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_player_app/CustomWidgets/Custom_flushBar.dart';
 import 'package:video_player_app/constants.dart';
 import 'package:video_player_app/screens/Profile_Screen.dart';
 
@@ -33,24 +36,27 @@ class _MyHomePageState extends State<MyHomePage> {
     Dio dio = Dio();
     try {
       var dir = await getApplicationDocumentsDirectory();
-      String fileName = url.split('=').last + '.mp4';
+      String fileName = '${url.split('=').last}.mp4';
       String filePath = '${dir.path}/$fileName';
       await dio.download(
         url,
         filePath,
         onReceiveProgress: (received, total) {
           if (total != -1) {
-            print((received / total * 100).toStringAsFixed(0) + "%");
+            if (kDebugMode) {
+              print("${(received / total * 100).toStringAsFixed(0)}%");
+            }
           }
         },
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Download completed")),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(CustomFlushBar.customFlushBar(
+          context, "Success", "Download completed"));
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Download failed")),
+        const SnackBar(content: Text("Download failed")),
       );
     }
   }
@@ -58,8 +64,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    NoScreenshot.instance
+        .screenshotOff()
+        .then((value) => print('Screenshots disabled'))
+        .catchError((e) => print('Error disabling screenshots: $e'));
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       autoPlay: false,
       controlsConfiguration: BetterPlayerControlsConfiguration(
         enablePlayPause: true,
@@ -103,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(vertical: 3),
+                      margin: const EdgeInsets.symmetric(vertical: 3),
                       height: 4,
                       width: 20,
                       decoration: BoxDecoration(
@@ -127,13 +137,13 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.transparent,
           actions: [
             Padding(
-              padding: EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 10),
               child: GestureDetector(
                 onTap: () {
                   Get.to(() => const ProfileScreen(),
                       transition: Transition.rightToLeft);
                 },
-                child: CircleAvatar(
+                child: const CircleAvatar(
                   backgroundImage: NetworkImage(
                     profileImage,
                   ),
@@ -162,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.white,
                     ),
                     child: IconButton(
-                      icon: Icon(Icons.keyboard_arrow_left),
+                      icon: const Icon(Icons.keyboard_arrow_left),
                       onPressed: _currentIndex > 0
                           ? () {
                               _onVideoIndexChanged(_currentIndex - 1);
@@ -180,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(15),
                         color: Colors.white,
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(
                             Icons.arrow_drop_down,
@@ -197,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.white,
                     ),
                     child: IconButton(
-                      icon: Icon(Icons.keyboard_arrow_right),
+                      icon: const Icon(Icons.keyboard_arrow_right),
                       onPressed: _currentIndex < videoUrls.length - 1
                           ? () {
                               _onVideoIndexChanged(_currentIndex + 1);

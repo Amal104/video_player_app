@@ -1,7 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:better_player/better_player.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_player_app/constants.dart';
+import 'package:video_player_app/screens/Profile_Screen.dart';
+
+import '../widgets/AppDrawer.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -16,7 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
     'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
   ];
 
-  int _currentIndex = 0;
+  int _currentIndex = 1;
 
   void _onVideoIndexChanged(int newIndex) {
     setState(() {
@@ -76,15 +81,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var scaffoldKey = GlobalKey<ScaffoldState>();
     return SafeArea(
       child: Scaffold(
-        key: scaffoldKey,
         extendBodyBehindAppBar: true,
+        drawer: const AppDrawer(),
         appBar: AppBar(
           leading: Builder(builder: (context) {
             return InkWell(
-              onTap: () => Scaffold.of(context).openEndDrawer(),
+              onTap: () => Scaffold.of(context).openDrawer(),
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Column(
@@ -121,12 +125,18 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           }),
           backgroundColor: Colors.transparent,
-          actions: const [
+          actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(
-                  "https://static.vecteezy.com/system/resources/previews/002/002/403/non_2x/man-with-beard-avatar-character-isolated-icon-free-vector.jpg",
+              padding: EdgeInsets.only(right: 10),
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => const ProfileScreen(),
+                      transition: Transition.rightToLeft);
+                },
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    profileImage,
+                  ),
                 ),
               ),
             )
